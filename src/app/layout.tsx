@@ -3,6 +3,7 @@ import { Prompt } from 'next/font/google'
 import './globals.css'
 
 import Navbar from '@/components/Navbar'
+import Provider from '@/lib/provider'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 
 const prompt = Prompt({
   subsets: ['thai'],
-  weight: ['400', '700']
+  weight: ['400', '700'],
 })
 
 export default function RootLayout({
@@ -22,8 +23,12 @@ export default function RootLayout({
   return (
     <html lang='en' className={prompt.className}>
       <body className='mx-30'>
-        <Navbar />
-        <main>{children}</main>
+        <main>
+          <Provider>
+            <Navbar />
+            {children}
+          </Provider>
+        </main>
         <footer></footer>
       </body>
     </html>

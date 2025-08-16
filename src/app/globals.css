@@ -33,7 +33,7 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
-  --color-primary-a:  oklch(0.665 0.287 322.85);
+  --color-primary-500: var(--primary-500);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -42,6 +42,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-secondary-100: #D8ECFF;
+  --color-secondary-900: #183097;
 }
 
 :root {
