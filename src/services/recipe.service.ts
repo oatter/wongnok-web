@@ -43,14 +43,27 @@ type RecipeDetails = {
 }
 
 export const fetchRecipes = async () => {
- 
-    const recipesFetch = await api.get<Recipe[]>(
-      '/recipes'
-    )
-  return recipesFetch.data
+  const recipesFetch = await api.get<{ results: Recipe[] }>(
+    '/api/v1/food-recipes?page=1&limit=10'
+  )
+
+  return recipesFetch.data.results
 }
 
 export const fetchRecipeDetails = async () => {
   const recipeDetails = await api.get<RecipeDetails>('/recipe-details')
   return recipeDetails
+}
+
+export const fetchRecipesByUser = async (token: string = '') => {
+  console.log('token', token)
+  const recipes = await api.get<{ results: Recipe[]}>(
+    '/api/v1/users/ba9872c8-49fa-42d8-8664-d9a44babe021/food-recipes',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+  return recipes.data.results
 }
