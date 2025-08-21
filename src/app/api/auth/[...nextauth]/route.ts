@@ -10,6 +10,21 @@ const handler = NextAuth({
       authorization: { params: { prompt: 'login' } },
     }),
   ],
+  callbacks: {
+    async jwt({token, account}) {
+      if (account) {
+        console.log('account : ', account)
+        token.accessToken = account.access_token
+        token.userId = account.providerAccountId
+      }
+      return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken
+      session.userId = token.userId
+      return session
+    }
+  },
   secret: process.env.NEXTAUTH_SECRET
 })
 
