@@ -55,10 +55,10 @@ export const fetchRecipeDetails = async () => {
   return recipeDetails
 }
 
-export const fetchRecipesByUser = async (token: string = '') => {
-  console.log('token', token)
+export const fetchRecipesByUser = async (userId?: string, token: string = '') => {
+  console.log('user', userId)
   const recipes = await api.get<{ results: Recipe[]}>(
-    '/api/v1/users/ba9872c8-49fa-42d8-8664-d9a44babe021/food-recipes',
+    `/api/v1/users/${userId}/food-recipes`,
     {
       headers: {
         Authorization: `Bearer ${token}`
