@@ -13,6 +13,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import { api } from '@/lib/axios'
+import { useMutation } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 type RecipeForm = {
@@ -21,24 +25,52 @@ type RecipeForm = {
   ingredient: string
   instruction: string
   imageURL: string
-  difficulty: string
-  duration: string
+  difficultyID: string
+  cookingDurationID: string
+}
+
+async function createRecipe(data: RecipeForm, token?: string) {
+  return api.post(
+    '/api/v1/food-recipes',
+    {
+      ...data,
+      difficultyID: +data.difficultyID,
+      cookingDurationID: +data.cookingDurationID,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
 }
 
 const CreateRecipe = () => {
-  const form = useForm<RecipeForm>({
-    defaultValues: {
-        name: '',
-        description: '',
-        ingredient: '',
-        instruction: '',
-        imageURL: '',
-        difficulty: 'easy',
-        duration: '1'
+  const route = useRouter()
+  const { data: session } = useSession()
+  const mutation = useMutation({
+    mutationFn: (data: RecipeForm) => {
+      return createRecipe(data, session?.accessToken)
+    },
+    onSuccess: () => {
+      route.push('/my-recipe')
     }
   })
+  const form = useForm<RecipeForm>({
+    defaultValues: {
+      name: '',
+      description: '',
+      ingredient: '',
+      instruction: '',
+      imageURL: '',
+      difficultyID: '1',
+      cookingDurationID: '1',
+    },
+  })
 
-  const onSubmit: SubmitHandler<RecipeForm> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<RecipeForm> = (data) => {
+    mutation.mutate(data)
+  }
 
   return (
     <div>
@@ -139,7 +171,7 @@ const CreateRecipe = () => {
           />
           <FormField
             control={form.control}
-            name='difficulty'
+            name='difficultyID'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ระดับความยาก</FormLabel>
@@ -149,16 +181,16 @@ const CreateRecipe = () => {
                   className='flex'
                 >
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='easy' id='easy' />
-                    <Label htmlFor='easy'>ง่าย</Label>
+                    <RadioGroupItem value='1' id='1' />
+                    <Label htmlFor='1'>ง่าย</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='medium' id='medium' />
-                    <Label htmlFor='medium'>ปรานกลาง</Label>
+                    <RadioGroupItem value='2' id='2' />
+                    <Label htmlFor='2'>ปรานกลาง</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='hard' id='hard' />
-                    <Label htmlFor='hard'>ยาก</Label>
+                    <RadioGroupItem value='3' id='3' />
+                    <Label htmlFor='3'>ยาก</Label>
                   </div>
                 </RadioGroup>
               </FormItem>
@@ -166,7 +198,7 @@ const CreateRecipe = () => {
           />
           <FormField
             control={form.control}
-            name='duration'
+            name='cookingDurationID'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ระยะเวลาทำอาหาร</FormLabel>
