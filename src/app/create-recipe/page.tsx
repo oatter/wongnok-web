@@ -16,7 +16,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { createRecipe } from '@/services/recipe.service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import z from 'zod'
@@ -56,8 +55,6 @@ const CreateRecipe = () => {
     },
   })
 
-  const { data: session } = useSession()
-
   const form = useForm<RecipeSchemaType>({
     resolver: zodResolver(RecipeSchema),
     defaultValues: {
@@ -71,17 +68,7 @@ const CreateRecipe = () => {
     },
   })
 
-  const onSubmit: SubmitHandler<RecipeForm> = (data) =>
-    postCreateRecipe({
-      name: data.name,
-      description: data.description,
-      ingredient: data.ingredient,
-      instruction: data.instruction,
-      imageURL: data.imageURL ?? '',
-      difficulty: data.difficulty,
-      duration: data.duration,
-      token: session?.accessToken ?? '',
-    })
+  const onSubmit: SubmitHandler<RecipeForm> = (data) => postCreateRecipe(data)
 
   return (
     <div>

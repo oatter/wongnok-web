@@ -62,35 +62,16 @@ export const fetchRecipeDetails = async () => {
   return recipeDetails
 }
 
-type createRecipeRequest = {
-  name: string
-  description: string
-  ingredient: string
-  instruction: string
-  imageURL: string
-  difficulty: string
-  duration: string
-  token: string
-}
-
-export const createRecipe = async (data: createRecipeRequest) => {
-  const recipeDetails = await api.post<RecipeForm>(
-    '/api/v1/food-recipes',
-    {
-      name: data.name,
-      description: data.description,
-      ingredient: data.ingredient,
-      instruction: data.instruction,
-      imageURL: data.imageURL ?? '',
-      difficultyID: Number(data.difficulty),
-      cookingDurationID: Number(data.duration),
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${data.token}`,
-      },
-    }
-  )
+export const createRecipe = async (data: RecipeForm) => {
+  const recipeDetails = await api.post<RecipeForm>('/api/v1/food-recipes', {
+    name: data.name,
+    description: data.description,
+    ingredient: data.ingredient,
+    instruction: data.instruction,
+    imageURL: data.imageURL ?? '',
+    difficultyID: Number(data.difficulty),
+    cookingDurationID: Number(data.duration),
+  })
   return recipeDetails
 }
 
