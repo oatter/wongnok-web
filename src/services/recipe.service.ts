@@ -27,7 +27,7 @@ export type Recipe = {
   user: User
 }
 
-type RecipeDetails = {
+export type RecipeDetails = {
   id: number
   name: string
   description: string
@@ -55,14 +55,17 @@ export const fetchRecipeDetails = async () => {
   return recipeDetails
 }
 
-export const fetchRecipesByUser = async (userId?: string, token: string = '') => {
+export const fetchRecipesByUser = async (
+  userId?: string,
+  token: string = ''
+) => {
   console.log('user', userId)
-  const recipes = await api.get<{ results: Recipe[]}>(
+  const recipes = await api.get<{ results: Recipe[] }>(
     `/api/v1/users/${userId}/food-recipes`,
     {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     }
   )
   return recipes.data.results
