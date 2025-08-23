@@ -24,8 +24,8 @@ const MyRecipe = () => {
       </div>
       {data && data.length > 0 ? (
         <div className='flex flex-wrap gap-8'>
-          {data.map((recipe) => (
-            <CardRecipe {...recipe} />
+          {data.map((recipe, i) => (
+            <CardRecipe {...recipe} key={i} />
           ))}
         </div>
       ) : (
