@@ -56,4 +56,20 @@ describe('Validate get recipes', () => {
     )
     expect(result).toEqual(mockRecipes)
   })
+
+  it('Should throw internal server error when server down or failure', async () => {
+    ;(api.get as unknown as Mock).mockRejectedValueOnce(
+      new Error('Internal Server Error')
+    )
+
+    await expect(fetchRecipesByUser('123', 'token')).rejects.toThrow(
+      'Internal Server Error'
+    )
+
+    expect(api.get).toHaveBeenCalledWith(`/api/v1/users/123/food-recipes`, {
+      headers: {
+        Authorization: `Bearer token`,
+      },
+    })
+  })
 })
