@@ -1,3 +1,4 @@
+import { RecipeForm } from '@/app/create-recipe/page'
 import { api } from '@/lib/axios'
 import axios from 'axios'
 
@@ -42,16 +43,35 @@ export type RecipeDetails = {
   user: User
 }
 
-export const fetchRecipes = async () => {
-  const recipesFetch = await api.get<{ results: Recipe[] }>(
-    '/api/v1/food-recipes?page=1&limit=10'
+type fetchRecipeRequest = {
+  page: number
+  limit: number
+  search: string
+}
+
+export const fetchRecipes = async (data: fetchRecipeRequest) => {
+  const recipesFetch = await api.get<{ results: Recipe[]; total: number }>(
+    `/api/v1/food-recipes?page=${data.page}&limit=${data.limit}&search=${data.search}`
   )
 
-  return recipesFetch.data.results
+  return recipesFetch.data
 }
 
 export const fetchRecipeDetails = async () => {
   const recipeDetails = await api.get<RecipeDetails>('/recipe-details')
+  return recipeDetails
+}
+
+export const createRecipe = async (data: RecipeForm) => {
+  const recipeDetails = await api.post<RecipeForm>('/api/v1/food-recipes', {
+    name: data.name,
+    description: data.description,
+    ingredient: data.ingredient,
+    instruction: data.instruction,
+    imageURL: data.imageURL ?? '',
+    difficultyID: Number(data.difficulty),
+    cookingDurationID: Number(data.duration),
+  })
   return recipeDetails
 }
 

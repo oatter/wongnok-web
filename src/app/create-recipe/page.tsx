@@ -3,42 +3,72 @@
 import { Button } from '@/components/ui/button'
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import { createRecipe } from '@/services/recipe.service'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import z from 'zod'
 
-type RecipeForm = {
+export type RecipeForm = {
   name: string
   description: string
   ingredient: string
   instruction: string
-  imageURL: string
+  imageURL?: string
   difficulty: string
   duration: string
 }
 
+const RecipeSchema = z.object({
+  name: z.string().min(2, { message: 'กรุณากรอกอย่างน้อย 2 ตัวอักษร' }),
+  description: z.string().min(2, { message: 'กรุณากรอกอย่างน้อย 10 ตัวอักษร' }),
+  ingredient: z.string().min(2, { message: 'กรุณาใส่วัตถุดิบที่ต้องการ' }),
+  instruction: z.string().min(2, { message: 'กรุณาใส่วิธีการ' }),
+  imageURL: z.string().url().optional().or(z.literal('')),
+  difficulty: z.enum(['1', '2', '3']),
+  duration: z.enum(['1', '2', '3', '4']),
+})
+
+type RecipeSchemaType = z.infer<typeof RecipeSchema>
+
 const CreateRecipe = () => {
-  const form = useForm<RecipeForm>({
-    defaultValues: {
-        name: '',
-        description: '',
-        ingredient: '',
-        instruction: '',
-        imageURL: '',
-        difficulty: 'easy',
-        duration: '1'
-    }
+  const router = useRouter()
+
+  const { mutateAsync: postCreateRecipe } = useMutation({
+    mutationFn: createRecipe,
+    onError: () => {
+      console.log('error fetching')
+    },
+    onSuccess: () => {
+      router.replace('/')
+    },
   })
 
-  const onSubmit: SubmitHandler<RecipeForm> = (data) => console.log(data)
+  const form = useForm<RecipeSchemaType>({
+    resolver: zodResolver(RecipeSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      ingredient: '',
+      instruction: '',
+      imageURL: '',
+      difficulty: '1',
+      duration: '1',
+    },
+  })
+
+  const onSubmit: SubmitHandler<RecipeForm> = (data) => postCreateRecipe(data)
 
   return (
     <div>
@@ -51,10 +81,6 @@ const CreateRecipe = () => {
           <FormField
             control={form.control}
             name='name'
-            rules={{
-              required: 'กรุณากรอกชื่อ',
-              minLength: { value: 2, message: 'อย่างน้อย 2 ตัวอักษร' },
-            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ชื่อเมนู</FormLabel>
@@ -149,15 +175,15 @@ const CreateRecipe = () => {
                   className='flex'
                 >
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='easy' id='easy' />
+                    <RadioGroupItem value='1' id='easy' />
                     <Label htmlFor='easy'>ง่าย</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='medium' id='medium' />
+                    <RadioGroupItem value='2' id='medium' />
                     <Label htmlFor='medium'>ปรานกลาง</Label>
                   </div>
                   <div className='flex items-center space-x-2'>
-                    <RadioGroupItem value='hard' id='hard' />
+                    <RadioGroupItem value='3' id='hard' />
                     <Label htmlFor='hard'>ยาก</Label>
                   </div>
                 </RadioGroup>
