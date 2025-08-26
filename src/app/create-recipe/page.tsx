@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
+import useCreateRecipe from '@/hooks/useCreateRecipe'
 import { createRecipe } from '@/services/recipe.service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -44,6 +45,7 @@ type RecipeSchemaType = z.infer<typeof RecipeSchema>
 
 const CreateRecipe = () => {
   const router = useRouter()
+  const { mapRecipePayload } = useCreateRecipe()
 
   const { mutateAsync: postCreateRecipe } = useMutation({
     mutationFn: createRecipe,
@@ -68,7 +70,10 @@ const CreateRecipe = () => {
     },
   })
 
-  const onSubmit: SubmitHandler<RecipeForm> = (data) => postCreateRecipe(data)
+  const onSubmit: SubmitHandler<RecipeForm> = (data) => {
+    const recipePayload = mapRecipePayload(data)
+    postCreateRecipe(recipePayload)
+  }
 
   return (
     <div>
