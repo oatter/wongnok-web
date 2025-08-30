@@ -38,6 +38,8 @@ export type CardRecipeProps = {
     name: string
   }
   user: User
+  isAdmin?: boolean
+  isMyEmail?: boolean
 }
 
 export default function Home() {

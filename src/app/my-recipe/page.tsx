@@ -12,6 +12,7 @@ const MyRecipe = () => {
   const { data } = useQuery({
     queryKey: ['recipesByUser'],
     queryFn: () => fetchRecipesByUser(session?.userId, session?.accessToken),
+    enabled: !!session,
   })
 
   return (
@@ -25,7 +26,12 @@ const MyRecipe = () => {
       {data && data.length > 0 ? (
         <div className='flex flex-wrap gap-8'>
           {data.map((recipe, i) => (
-            <CardRecipe {...recipe} key={i} />
+            <CardRecipe
+              isMyEmail={session?.email === 'nat@gmail.cm'}
+              isAdmin={session?.roles?.includes('admin-recipe')}
+              {...recipe}
+              key={i}
+            />
           ))}
         </div>
       ) : (
