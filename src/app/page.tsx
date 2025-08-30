@@ -115,7 +115,6 @@ export default function Home() {
       <h1 className='pt-6 pb-8 text-4xl font-bold'>สูตรอาหารทั้งหมด</h1>
       {isRecipeLoading ? (
         <div>
-          <h1 className='pt-6 pb-8 text-4xl font-bold'>สูตรอาหารทั้งหมด</h1>
           <div className='flex flex-wrap gap-8'>
             {[1, 2, 3, 4, 5, 6, 7].map((i) => {
               return <SkeletonCardLoading key={i} />

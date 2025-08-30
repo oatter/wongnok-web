@@ -1,6 +1,9 @@
 import { RecipeForm } from '@/app/create-recipe/page'
+import { auth } from '@/lib/auth'
 import { api } from '@/lib/axios'
 import axios from 'axios'
+import { getServerSession } from 'next-auth'
+import { getSession } from 'next-auth/react'
 
 type User = {
   id: string
@@ -60,36 +63,45 @@ type fetchRecipeRequest = {
 }
 
 export const fetchRecipes = async (data: fetchRecipeRequest) => {
-  const recipesFetch = await api.get<{ results: Recipe[]; total: number }>(
-    `/api/v1/food-recipes?page=${data.page}&limit=${data.limit}&search=${data.search}`
-  )
+  try {
+    const recipesFetch = await api.get<{
+      results: Recipe[]
+      total: number
+    }>(
+      // `/api/v1/food-recipes?page=${data.page}&limit=${data.limit}&search=${data.search}`
+      '/api/v1/food-recipes?page=1&limit=10'
+    )
 
-  return recipesFetch.data
+    return recipesFetch.data
+  } catch (e) {
+    console.error(e)
+  }
 }
 
-export const fetchRecipeDetails = async () => {
-  const recipeDetails = await api.get<RecipeDetails>('/recipe-details')
+export const fetchRecipeDetails = async (recipeId: string) => {
+  const recipeDetails = await api.get<RecipeDetails>(`/api/v1/food-recipes/${recipeId}`)
   return recipeDetails
 }
 
 export const createRecipe = async (data: RecipePayload) => {
-  const recipeDetails = await api.post<RecipeForm>('/api/v1/food-recipes', {
-    ...data,
-  })
+  const recipeDetails = await api.post<RecipeForm>(
+    '/api/v1/food-recipes',
+    {
+      ...data,
+    }
+  )
   return recipeDetails
 }
 
-export const fetchRecipesByUser = async (
-  userId?: string,
-  token: string = ''
-) => {
-  console.log('user', userId)
-  const recipes = await api.get<{ results: Recipe[] }>(
-    `/api/v1/users/${userId}/food-recipes`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+export const fetchRecipesByUser = async () => {
+  const session = await auth()
+  console.log('session servcie',session )
+  const recipes = await axios.get<{ results: Recipe[] }>(
+    `http://localhost:8000/api/v1/users/${session?.userId}/food-recipes`,
+    {headers:
+      {
+        Authorization: `Bearer ${session?.accessToken}`
+      }
     }
   )
   return recipes.data.results

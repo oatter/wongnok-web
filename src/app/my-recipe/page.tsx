@@ -1,23 +1,15 @@
-'use client'
 import CardRecipe from '@/components/CardRecipe'
 import { Button } from '@/components/ui/button'
 import { fetchRecipesByUser } from '@/services/recipe.service'
-import { useQuery } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 
-const MyRecipe = () => {
-  const { data: session } = useSession()
-
-  const { data } = useQuery({
-    queryKey: ['recipesByUser'],
-    queryFn: () => fetchRecipesByUser(session?.userId, session?.accessToken),
-  })
+const MyRecipe = async() => {
+  const data = await fetchRecipesByUser()
 
   return (
     <div>
       <div className='flex justify-between items-center py-8'>
-        <h1 className='font-bold text-4xl'>สูตรอาหารของฉัน</h1>
+        <h1 className='font-bold xl:text-4xl lg:text-3xl sm:text-sm'>สูตรอาหารของฉัน</h1>
         <Link href={'/create-recipe'}>
           <Button className='bg-primary-500'>​+ สร้างสูตรอาหาร</Button>
         </Link>

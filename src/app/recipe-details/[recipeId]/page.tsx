@@ -1,5 +1,3 @@
-'use client'
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { fetchRecipeDetails } from '@/services/recipe.service'
 import { useQuery } from '@tanstack/react-query'
@@ -11,29 +9,17 @@ type RecipeDetailsIdProps = {
   }>
 }
 
-const RecipeDetailsId = () => {
-  // const { recipeId } = await params
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['recipeDetail'],
-    queryFn: fetchRecipeDetails
-  })
-
-  if (isLoading) return <div>Loading...</div>
-
-  if (isError) return <div>Error</div>
+const RecipeDetailsId = async ({ params }: RecipeDetailsIdProps) => {
+  const { recipeId } = await params
+  const data = await fetchRecipeDetails(recipeId)
 
   return (
     <div className='flex flex-col gap-y-5'>
       <div className='flex flex-col gap-y-5'>
         <h1 className='font-bold text-4xl'>{data?.data.name}</h1>
         <div>
-          <p>
-            {data?.data.description}
-          </p>
-          <p className='text-secondary text-xs'>
-            {data?.data.updatedAt}
-          </p>
+          <p>{data?.data.description}</p>
+          <p className='text-secondary text-xs'>{data?.data.updatedAt}</p>
         </div>
         <div>
           <Avatar>
@@ -45,7 +31,11 @@ const RecipeDetailsId = () => {
       <div className='flex gap-x-8'>
         <div className='flex flex-col gap-6'>
           <div className='relative w-[584px] h-[334px]'>
-            <Image src={data?.data.imageUrl || '/beef_wellington.png'} alt='beef wellington' fill />
+            <Image
+              src={data?.data.imageUrl || '/beef_wellington.png'}
+              alt='beef wellington'
+              fill
+            />
           </div>
           <div className='rounded-sm px-2 bg-secondary-100 text-secondary-900'>
             <p>{data?.data.cookingDuration.name} นาที</p>
